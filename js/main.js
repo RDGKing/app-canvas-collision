@@ -2,13 +2,13 @@ const canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
 //Obtiene las dimensiones de la pantalla actual
-const window_height = window.innerHeight / 2;
-const window_width = window.innerWidth / 2;
+const window_height = window.innerHeight;
+const window_width = window.innerWidth;
 
 canvas.height = window_height;
 canvas.width = window_width;
 
-canvas.style.background = "#ff8";
+canvas.style.background = "#E59999";
 
 class Circle {
     constructor(x, y, radius, color, text, speed) {
@@ -74,31 +74,45 @@ let randomX = Math.random() * window_width;
 let randomY = Math.random() * window_height;
 let randomRadius = Math.floor(Math.random() * 100 + 30);
 
-let miCirculo = new Circle(100, 100, 50, "blue", "1", 1);
-let miCirculo2 = new Circle(250, 150, 80, "blue", "2", 1);
 
 //console.log(getDistance(miCirculo.posX, miCirculo.posY, miCirculo2.posX, miCirculo2.posY));
+///////////////////////////
 
-miCirculo.draw(ctx);
-miCirculo2.draw(ctx);
+let arrayCircle = [];
 
+for (let i = 0; i < 10; i++) {
 
-let updateCircle = function () {
-    requestAnimationFrame(updateCircle);
+    let randomR = Math.floor(Math.random() * 60 + 20);
+    let randomX = Math.random() * (window_width - randomR * 2) + randomR;
+    let randomY = Math.random() * (window_height - randomR * 2) + randomR;
+    let randomS = Math.floor(Math.random() * 10 + 1);
+
+    let miCirculo = new Circle(randomX, randomY, randomR, 'blue', (i + 1), randomS);
+    arrayCircle.push(miCirculo);
+    arrayCircle[i].draw(ctx);
+}
+function updateCircles() {
     ctx.clearRect(0, 0, window_width, window_height);
-    miCirculo.update(ctx);
-    miCirculo2.update(ctx);
+    arrayCircle.forEach(circle => {
+        circle.update(ctx);
 
+        arrayCircle.forEach(circletwo => {
+            if (circle !== circletwo && getDistance(circle.posX, circle.posY, circletwo.posX, circletwo.posY) <= (circle.radius + circletwo.radius)) {
 
-    if (getDistance(miCirculo.posX, miCirculo.posY, miCirculo2.posX, miCirculo2.posY) < (miCirculo.radius + miCirculo2.radius)) {
-        miCirculo.color = "black";
-        // console.log("Colision");
-    }
-    else {
-        miCirculo.color = "blue";
+                let angulo = Math.atan2(circletwo.posY - circle.posY, circletwo.posX - circle.posX);
+                //console.log("angulo: " + angulo * 180 / Math.PI);
+                let PosNewX = Math.cos(angulo);
+                let PosNewY = Math.sin(angulo);
+                // console.log("X: " + PosNewX * 180 / Math.PI);
+                // console.log("Y: " + PosNewY * 180 / Math.PI);
+                circle.dx = circle.speed * -PosNewX;
+                circle.dy = circle.speed * -PosNewY;
+                circletwo.dx = circletwo.speed * PosNewX;
+                circletwo.dy = circletwo.speed * PosNewY;
+            }
+        });
+    });
+    requestAnimationFrame(updateCircles);
+}
 
-    }
-
-};
-
-updateCircle();
+updateCircles();
