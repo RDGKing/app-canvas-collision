@@ -10,6 +10,16 @@ canvas.width = window_width;
 
 canvas.style.background = "#E59999";
 
+
+function generarColorRGB() {
+    var r = Math.floor(Math.random() * 256); // Valor de rojo entre 0 y 255
+    var g = Math.floor(Math.random() * 256); // Valor de verde entre 0 y 255
+    var b = Math.floor(Math.random() * 256); // Valor de azul entre 0 y 255
+    var color_rgb = 'rgb(' + r + ',' + g + ',' + b + ')';
+    return color_rgb;
+}
+
+
 class Circle {
     constructor(x, y, radius, color, text, speed) {
         this.posX = x;
@@ -32,7 +42,7 @@ class Circle {
         context.font = "20px Arial";
         context.fillText(this.text, this.posX, this.posY);
 
-        context.lineWidth = 2;
+        context.lineWidth = 3;
         context.arc(this.posX, this.posY, this.radius, 0, Math.PI * 2, false);
         context.stroke();
         context.closePath();
@@ -75,17 +85,15 @@ let randomY = Math.random() * window_height;
 let randomRadius = Math.floor(Math.random() * 100 + 30);
 
 
-//console.log(getDistance(miCirculo.posX, miCirculo.posY, miCirculo2.posX, miCirculo2.posY));
-///////////////////////////
 
 let arrayCircle = [];
 
 for (let i = 0; i < 10; i++) {
 
-    let randomR = Math.floor(Math.random() * 60 + 20);
+    let randomR = Math.floor(Math.random() * 90 + 20);
     let randomX = Math.random() * (window_width - randomR * 2) + randomR;
     let randomY = Math.random() * (window_height - randomR * 2) + randomR;
-    let randomS = Math.floor(Math.random() * 10 + 1);
+    let randomS = Math.floor(Math.random() * 6 + 1);
 
     let miCirculo = new Circle(randomX, randomY, randomR, 'blue', (i + 1), randomS);
     arrayCircle.push(miCirculo);
@@ -97,14 +105,18 @@ function updateCircles() {
         circle.update(ctx);
 
         arrayCircle.forEach(circletwo => {
-            if (circle !== circletwo && getDistance(circle.posX, circle.posY, circletwo.posX, circletwo.posY) <= (circle.radius + circletwo.radius)) {
+            if (circle !== circletwo && getDistance(circle.posX, circle.posY, circletwo.posX, circletwo.posY) <=(circle.radius + circletwo.radius)) {
 
                 let angulo = Math.atan2(circletwo.posY - circle.posY, circletwo.posX - circle.posX);
                 //console.log("angulo: " + angulo * 180 / Math.PI);
+              
+                circle.color = generarColorRGB();
+                circletwo = generarColorRGB();
                 let PosNewX = Math.cos(angulo);
                 let PosNewY = Math.sin(angulo);
                 // console.log("X: " + PosNewX * 180 / Math.PI);
                 // console.log("Y: " + PosNewY * 180 / Math.PI);
+    
                 circle.dx = circle.speed * -PosNewX;
                 circle.dy = circle.speed * -PosNewY;
                 circletwo.dx = circletwo.speed * PosNewX;
